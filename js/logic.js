@@ -1,4 +1,4 @@
-class objects {
+class Objects {
 	constructor(type, state, name, level, theClass) {
 		this.type = type;
 		this.state = state;
@@ -27,7 +27,7 @@ class Factory {
 		this.state = "alive";
 	}
 	instantiateBad() {
-		const generatedObj = new objects(
+		const generatedObj = new Objects(
 			"baddie",
 			this.state,
 			`badguy Number${this.creations.length}, this.level`
@@ -35,7 +35,7 @@ class Factory {
 		this.creations.push(generatedObj);
 	}
 	instantiatePlayer(name) {
-		const you = new objects("player", this.state, name, 1);
+		const you = new Objects("player", this.state, name, 1);
 		return you;
 	}
 }
