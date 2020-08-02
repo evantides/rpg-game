@@ -7,11 +7,11 @@ class Objects {
 		this.inventory = [];
 		this.theClass = theClass;
 	}
-	attack(target) {
+	attack(target, choose) {
 		if (this.inventory.length === 0) {
 			console.log(`${this.name} punches ${target.name}!`);
 		} else {
-			console.log("choose a weapon!");
+			console.log(`${this.name} hits ${target.name} with a ${choose.name}!`);
 		}
 	}
 	aquireItem(item) {
@@ -43,7 +43,7 @@ class Factory {
 class Item {
 	constructor(name, damage, type, level, description) {
 		this.name = name;
-		this.damage = damage; // if damage is positive, it damages the person its used on. If damage is negative, it heals@
+		this.damage = damage; // if damage is positive, it damages the person its used on. If damage is negative, it heals!
 		this.type = type;
 		this.level = level;
 		this.owner = null;
@@ -56,14 +56,22 @@ let level = 1;
 let gameLvl = new Factory(level);
 let rustySword = new Item(
 	"rusty sword",
+	2,
+	"sword",
+	1,
+	"Hopefully it's sharp enough to get the job done."
+);
+let sword = new Item(
+	"good sword",
 	5,
 	"sword",
 	1,
-	"You found this sword lying on the ground. Hopefully it is sharp enough to get the job done!"
+	"It looks sharp, and durable!"
 );
+
 let player = gameLvl.instantiatePlayer("John");
 console.log(player);
 player.attack(player);
 player.aquireItem(rustySword);
-player.aquireItem(rustySword);
-player.attack(player);
+player.aquireItem(sword);
+player.attack(player, sword);

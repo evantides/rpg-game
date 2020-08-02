@@ -11,7 +11,8 @@
 #Inventory {
 	width: 100%;
 	height: 55px;
-	border: dashed black;
+	border: solid dimgray;
+	border-radius: 3px;
 	margin: 0 auto;
 	display: flex;
 	padding-left: 3px;
@@ -28,12 +29,25 @@
 	width: 50px;
 }
 .description {
-	background-color: rgba(0, 0, 0, 0.5);
+}
+.modalVisible {
+	position: fixed;
+	background-color: rgba(140, 164, 147, 0.5);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto;
+}
+.modal {
+	/* display: none; */
+	position: fixed;
+	background-color: rgba(140, 164, 147, 0.5);
 	display: none;
+	text-align: center;
+	border-radius: 3px;
+	color: black;
+	padding: 20px;
 }
 .showIt {
-	display: block;
+	display: flex;
 }
-/* .inventory-container:hover .description {
-	display: block;
-} */
