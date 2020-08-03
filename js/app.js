@@ -128,7 +128,8 @@ const loadInventory = (player, thing) => {
 
 const clearInventory = (player) => {
 	player.inventory.forEach((item) => {
-		$(".inventory-container").remove();
+		$("#Inventory").empty();
+		console.log(item);
 	});
 	loadInventory(player);
 };

@@ -9,7 +9,11 @@ class Objects {
 	}
 	attack(target, choose) {
 		const test = Math.floor(Math.random() * (0 - 10)) / 10;
-		if (this.inventory.length === 0) {
+		if (
+			this.inventory.length === 0 ||
+			(this.inventory.length > 0 &&
+				!this.inventory.find((element) => element.type === "sword"))
+		) {
 			if (this.accuracy >= test) {
 				target.health--;
 				updateDOM(
@@ -19,22 +23,28 @@ class Objects {
 			} else {
 				updateDOM("#playWindow", `${this.name} missed ${target.name}!`);
 			}
-		} else if (this.accuracy >= test) {
+		} else if (
+			this.inventory.find((element) => element.type === "sword") &&
+			this.accuracy >= test
+		) {
 			target.health -= choose.damage;
 			choose.durability--;
 			updateDOM(
 				"#playWindow",
 				`${this.name} hits ${target.name} with a ${choose.name}! They now have ${target.health} health left, and their weapon now has ${choose.durability} hit(s) left before it breaks!`
 			);
+			if (choose.durability <= 0) {
+				removeItem(choose, this);
+			}
 		} else {
 			choose.durability--;
 			updateDOM(
 				"#playWindow",
 				`${this.name} missed ${target.name} Their weapon now has ${choose.durability} hit(s) left before it breaks!`
 			);
-		}
-		if (choose.durability <= 0) {
-			removeItem(choose, this);
+			if (choose.durability <= 0) {
+				removeItem(choose, this);
+			}
 		}
 	}
 	heal(healthItem) {
@@ -134,10 +144,10 @@ class Item_Factory {
 	}
 }
 const removeItem = (choose, object) => {
+	object.inventory.splice(choose, 1);
+	console.log(object.inventory);
 	setTimeout(() => {
-		updateDOM("#playWindow", `${this.name}'s ${choose.name} broke!!`);
-		object.inventory = object.inventory.splice(choose, 1);
-		console.log(object.inventory);
+		updateDOM("#playWindow", `${object.name}'s ${choose.name} broke!!`);
 	}, 2000);
 	if (object.type === "player") {
 		clearInventory(object);
@@ -150,7 +160,12 @@ const gameLoop = (baddies, player) => {
 	};
 	attackLoop = () => {
 		console.log(baddies[0].health);
-		player.attack(baddies[0], player.inventory[0]);
+		player.attack(
+			baddies[0],
+			player.inventory.find((element) => {
+				if (element.type === "sword") return element;
+			})
+		);
 		setTimeout(() => {
 			if (baddies[0].health <= 0) {
 				updateDOM("#playWindow", `${baddies[0].name} has died!`);
@@ -211,10 +226,7 @@ const start = (name) => {
 	const gameLvl = new Factory(level);
 	const player = gameLvl.instantiatePlayer(name, 20);
 	const totalItems = new Item_Factory(level);
-	player.inventory = [
-		totalItems.createRustySword(),
-		totalItems.createHealthPot(),
-	];
+	player.inventory = [totalItems.createSword(), totalItems.createHealthPot()];
 	console.log(player.inventory);
 	loadInventory(player);
 	let baddies = gameLvl.instantiateBad(3);
