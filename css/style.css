@@ -1,22 +1,27 @@
-/* * {
-	border: solid gold;
-} */
-
+body {
+	background: darkgray;
+	font-family: "Oswald", sans-serif;
+	/* font-family: "Rubik", sans-serif; */
+}
 #playWindow {
 	margin: 0 auto;
 	width: 700px;
 	height: 650px;
+	border-radius: 5px;
+	background: slategray;
+	border: solid seashell;
+	padding-top: 10px;
 }
 
 #Inventory {
-	width: 100%;
+	width: 90%;
 	height: 55px;
-	border: solid dimgray;
-	border-radius: 3px;
 	margin: 0 auto;
+	border: solid dimgray;
+	background: whitesmoke;
+	border-radius: 3px;
 	display: flex;
-	padding-left: 3px;
-	padding-bottom: 0;
+	padding: 3px;
 }
 
 .inventory-container {
@@ -28,20 +33,30 @@
 	padding: 2px;
 	width: 50px;
 }
-.description {
-}
+
 .modalVisible {
-	position: fixed;
+	width: 350px;
+	height: 325px;
+	left: 40%;
+	top: 25%;
+	border: solid dimgray 2px;
+	position: absolute;
 	background-color: rgba(140, 164, 147, 0.5);
 	display: flex;
-	align-items: center;
+	align-items: top;
 	justify-content: center;
 	margin: 0 auto;
 }
+.description {
+    padding: 10px;
+    
+}
 .modal {
 	/* display: none; */
-	position: fixed;
-	background-color: rgba(140, 164, 147, 0.5);
+	position: absolute;
+	margin: 20px;
+	border: solid dimgray 2px;
+	background-color: rgba(140, 164, 147, 0.8);
 	display: none;
 	text-align: center;
 	border-radius: 3px;
