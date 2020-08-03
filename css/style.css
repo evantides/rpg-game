@@ -43,13 +43,13 @@ body {
 	position: absolute;
 	background-color: rgba(140, 164, 147, 0.5);
 	display: flex;
-	align-items: top;
+	align-items: center;
 	justify-content: center;
 	margin: 0 auto;
 }
 .description {
-    padding: 10px;
-    
+	padding: 10px;
+	flex-direction: row;
 }
 .modal {
 	/* display: none; */

@@ -33,8 +33,18 @@ class Objects {
 				`${this.name} missed ${target.name} Their weapon now has ${choose.durability} hit(s) left before it breaks!`
 			);
 		}
+		if (choose.durability <= 0) {
+			removeItem(choose, this);
+		}
 	}
-	heal(healthItem) {}
+	heal(healthItem) {
+		healthItem.durability--;
+		this.health += healthItem.damage;
+		updateDOM(
+			"#playWindow",
+			`${this.name} healed themselves for  ${healthItem.damage}. Their health is now ${this.health}. Their health potion now has ${healthItem.durability} uses left before it runs out!`
+		);
+	}
 	aquireItem(item) {
 		item.owner = this.name;
 		this.inventory.push(item);
@@ -51,7 +61,10 @@ class Factory {
 		this.level = level;
 	}
 	instantiateBad(num) {
+		let badWeapons = new Item_Factory();
+
 		for (let i = 0; i < this.level * num; i++) {
+			badWeapons.createRustySword();
 			const generatedObj = new Objects(
 				"baddie",
 				`Ruffian #${this.badGuys.length + 1}`,
@@ -60,6 +73,8 @@ class Factory {
 				Math.floor(Math.random() * (7 - 3)) / 10
 			);
 			this.badGuys.push(generatedObj);
+			this.badGuys[i].inventory.push(badWeapons.weapons[i]);
+			console.log(this.badGuys[i]);
 		}
 		return this.badGuys;
 	}
@@ -113,11 +128,21 @@ class Item_Factory {
 		return sword;
 	}
 	createHealthPot() {
-		const healthPot = new Item("health potion", -3, "healing", 3, 1, "Heals!");
+		const healthPot = new Item("health potion", 3, "healing", 3, 1, "Heals!");
 		this.modifiers.push(healthPot);
 		return healthPot;
 	}
 }
+const removeItem = (choose, object) => {
+	setTimeout(() => {
+		updateDOM("#playWindow", `${this.name}'s ${choose.name} broke!!`);
+		object.inventory = object.inventory.splice(choose, 1);
+		console.log(object.inventory);
+	}, 2000);
+	if (object.type === "player") {
+		clearInventory(object);
+	}
+};
 
 const gameLoop = (baddies, player) => {
 	const startLoop = () => {
@@ -130,16 +155,19 @@ const gameLoop = (baddies, player) => {
 			if (baddies[0].health <= 0) {
 				updateDOM("#playWindow", `${baddies[0].name} has died!`);
 				if (Math.floor(Math.random() * (10 - 5) + 5) > 7) {
-					itemDOM(
-						"#main",
-						`${baddies[0].name} had an item on him! Would you like to see what it is?`
-					);
+					setTimeout(() => {
+						itemDOM(
+							"#main",
+							`${baddies[0].name} had an item on him! Would you like to see what it is?`
+						);
+					}, 2000);
 				} else {
 					setTimeout(startLoop, 2000);
 				}
 				baddies.shift();
 			} else {
-				baddies[0].attack(player);
+				console.log(baddies[0].inventory[0]);
+				baddies[0].attack(player, baddies[0].inventory[0]);
 				setTimeout(
 					() => askDOM("#main", `${baddies[0].name} is still alive! Now what?`),
 					2000
@@ -157,17 +185,22 @@ const gameLoop = (baddies, player) => {
 			num = Math.floor(Math.random() * 2);
 			player.aquireItem(random.weapons[num]);
 			updateDOM("#playWindow", `You found a ${random.weapons[num].name}`);
+			startLoop();
 		} else {
 			player.aquireItem(random.modifiers[0]);
 			updateDOM("#playWindow", `You found a ${random.modifiers[0].name}`);
+			startLoop();
 		}
 	};
 	healYourself = () => {
 		player.heal(
 			player.inventory.find((element) => {
-				element === healthPot;
+				if (element.name === "health potion") {
+					return element;
+				}
 			})
 		);
+		setTimeout(startLoop, 2000);
 	};
 };
 let level = 0;
@@ -184,11 +217,9 @@ const start = (name) => {
 	];
 	console.log(player.inventory);
 	loadInventory(player);
-
 	let baddies = gameLvl.instantiateBad(3);
 	console.log(baddies);
 	gameLoop(baddies, player);
-	// player.attack(player, player.inventory[0]);
 	askDOM(
 		"#main",
 		`There are ${baddies.length} bad guys! The first one is approaching! What do you do?`

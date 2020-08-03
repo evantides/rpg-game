@@ -29,8 +29,8 @@ const itemDOM = ($element, popUp) => {
 	$modal.append($yes);
 	$modal.append($no);
 	$yes.on("click", (event) => {
-		randomItemFind();
 		$modal.remove();
+		randomItemFind();
 	});
 	$no.on("click", () => {
 		$modal.remove();
@@ -53,7 +53,8 @@ const askDOM = ($element, popUp) => {
 		$modal.remove();
 	});
 	$heal.on("click", (event) => {
-		console.log("you better heal yo'self");
+		healYourself();
+		$modal.remove();
 	});
 	$flee.on("click", (event) => {
 		console.log("run a check to see if you can.... run!");
@@ -123,6 +124,13 @@ const loadInventory = (player, thing) => {
 	} else if (thing) {
 		addInventory(player, thing);
 	}
+};
+
+const clearInventory = (player) => {
+	player.inventory.forEach((item) => {
+		$(".inventory-container").remove();
+	});
+	loadInventory(player);
 };
 
 $(() => {
