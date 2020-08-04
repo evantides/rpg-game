@@ -61,7 +61,7 @@ const askDOM = ($element, popUp) => {
 	});
 };
 
-const formDOM = (element, question) => {
+const formDOM = (element, question, bool, type, object) => {
 	const $form = $("<form>");
 	$form.addClass("in-game-form");
 	const $label = $("<label>");
@@ -77,6 +77,22 @@ const formDOM = (element, question) => {
 	$form.append($label);
 	$form.append($input);
 	$form.append($submit);
+	if (bool) {
+		$("form").on("submit", (event) => {
+			event.preventDefault();
+			let answer = $("#infoRequired").val();
+			console.log(answer);
+			giveItem(object, answer, type);
+			$(event.currentTarget).remove();
+		});
+	} else {
+		$("form").on("submit", (event) => {
+			event.preventDefault();
+			let name = $("#infoRequired").val();
+			start(name);
+			$(event.currentTarget).remove();
+		});
+	}
 };
 
 const addInventory = (player, item) => {
@@ -134,11 +150,4 @@ const clearInventory = (player) => {
 	loadInventory(player);
 };
 
-$(() => {
-	$("form").on("submit", (event) => {
-		event.preventDefault();
-		let name = $("#infoRequired").val();
-		start(name);
-		$(event.currentTarget).remove();
-	});
-});
+$(() => {});
