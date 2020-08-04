@@ -6,6 +6,9 @@ class Objects {
 		this.inventory = [];
 		this.health = health;
 		this.accuracy = accuracy;
+		this.exp = 0;
+		this.baseHealth = 20;
+		this.baseAttack = 2;
 	}
 	attack(target, choose) {
 		const test = Math.floor(Math.random() * (0 - 10)) / 10;
@@ -15,7 +18,7 @@ class Objects {
 				!this.inventory.find((element) => element.type === "sword"))
 		) {
 			if (this.accuracy >= test) {
-				target.health--;
+				target.health -= this.baseAttack;
 				updateDOM(
 					"#playWindow",
 					`${this.name} punches ${target.name}! They now have ${target.health} health left!`
@@ -27,7 +30,7 @@ class Objects {
 			this.inventory.find((element) => element.type === "sword") &&
 			this.accuracy >= test
 		) {
-			target.health -= choose.damage;
+			target.health -= choose.damage + this.baseAttack;
 			choose.durability--;
 			updateDOM(
 				"#playWindow",
