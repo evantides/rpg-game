@@ -1,5 +1,5 @@
 body {
-	background: darkgray;
+	background-image: url("../img/background.jpg");
 	font-family: "Oswald", sans-serif;
 	/* font-family: "Rubik", sans-serif; */
 }
@@ -8,7 +8,7 @@ body {
 	width: 700px;
 	height: 650px;
 	border-radius: 5px;
-	background: slategray;
+	background-color: slategray;
 	border: solid seashell;
 	padding-top: 10px;
 }
@@ -37,19 +37,35 @@ body {
 .modalVisible {
 	width: 350px;
 	height: 325px;
-	left: 40%;
+	left: 33%;
 	top: 25%;
 	border: solid dimgray 2px;
 	position: absolute;
 	background-color: rgba(140, 164, 147, 0.5);
 	display: flex;
 	align-items: center;
+	flex-wrap: wrap;
 	justify-content: center;
 	margin: 0 auto;
+}
+
+.modalVisible > p {
+	text-align: center;
+	font-size: 25px;
+	width: 90%;
+}
+
+button {
+	padding: 10px;
 }
 .description {
 	padding: 10px;
 	flex-direction: row;
+}
+form {
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 .modal {
 	/* display: none; */
