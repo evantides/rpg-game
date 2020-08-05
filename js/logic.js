@@ -1,16 +1,17 @@
 const removeItem = (choose, object) => {
-	object.inventory.splice(choose, 1);
-	console.log(object.inventory);
+	console.log(choose, "THIS IS WHAT YOU'RE GOING TO DELETE");
+	object.inventory.splice(object.inventory.indexOf(choose), 1);
+	console.log(object.inventory, "THIS IS WHAT IS GOING TO BE RENDERED");
 	setTimeout(() => {
 		updateDOM("#playWindow", `${object.name}'s ${choose.name} broke!!`);
 	}, 2000);
 	if (object.type === "player") {
-		clearInventory(object);
+		clearInventory(object); //deletes images
 	}
 };
 
 const gameLoop = (baddies, player) => {
-	const startLoop = () => {
+	startLoop = () => {
 		if (baddies.length > 0) {
 			askDOM("#main", `There are ${baddies.length} bad guys left! Now what?`);
 		} else {
@@ -24,46 +25,61 @@ const gameLoop = (baddies, player) => {
 			levelUp(player);
 		}
 	};
-	attackLoop = () => {
-		player.attack(
-			baddies[0],
-			player.inventory.find((element) => {
-				if (element.type === "sword") return element;
-			})
-		);
-		if (baddies[0].health <= 0) {
-			setTimeout(() => {
-				updateDOM("#playWindow", `${baddies[0].name} has died!`);
-			}, 2000);
-			player.exp += 100;
-			setTimeout(() => {
-				updateDOM(
-					"#playWindow",
-					`${player.name} now has ${player.exp} points of experience!`
-				);
-			}, 2000);
-			if (Math.floor(Math.random() * (10 - 5) + 5) > 7) {
-				setTimeout(() => {
-					itemDOM(
-						"#main",
-						`${baddies[0].name} had an item on him! Would you like to see what it is?`
-					);
-				}, 2000);
-			} else {
-				setTimeout(startLoop, 2000);
-			}
-			setTimeout(() => {
-				baddies.shift();
-			}, 2000);
-		} else {
-			console.log(baddies[0].inventory[0]);
-			baddies[0].attack(player, baddies[0].inventory[0]);
-			setTimeout(
-				() => askDOM("#main", `${baddies[0].name} is still alive! Now what?`),
-				2000
+	attackLoop = (skipTurn) => {
+		if (!skipTurn) {
+			player.attack(
+				baddies[0],
+				player.inventory.find((element) => {
+					if (element.type === "sword") return element;
+				})
 			);
+			if (baddies[0].health <= 0) {
+				setTimeout(() => {
+					updateDOM("#playWindow", `${baddies[0].name} has died!`);
+				}, 2000);
+				player.exp += 100;
+				setTimeout(() => {
+					updateDOM(
+						"#playWindow",
+						`${player.name} now has ${player.exp} points of experience!`
+					);
+				}, 4000);
+				if (Math.floor(Math.random() * (10 - 5) + 5) > 7) {
+					setTimeout(() => {
+						itemDOM(
+							"#main",
+							`${baddies[0].name} had an item on him! Would you like to see what it is?`
+						);
+					}, 4500);
+				} else {
+					setTimeout(startLoop, 6000);
+				}
+				setTimeout(() => {
+					baddies.shift();
+				}, 4500);
+			} else {
+				setTimeout(() => {
+					baddies[0].attack(player, baddies[0].inventory[0]);
+				}, 2000);
+				setTimeout(
+					() => askDOM("#main", `${baddies[0].name} is still alive! Now what?`),
+					3000
+				);
+			}
+		} else {
+			baddies[0].attack(player, baddies[0].inventory[0]);
+			if (player.health <= 0) {
+				endLoop();
+				console.log("I should be dead");
+			} else {
+				setTimeout(
+					() => askDOM("#main", `${baddies[0].name} is still alive! Now what?`),
+					2000
+				);
+			}
 		}
 	};
+
 	randomItemFind = () => {
 		const random = new Item_Factory();
 		random.createHealthPot();
@@ -89,15 +105,17 @@ const gameLoop = (baddies, player) => {
 				}
 			})
 		);
-		setTimeout(startLoop, 2000);
+		setTimeout(() => {
+			attackLoop(true);
+		}, 2000);
 	};
 };
-let level = 1;
+let level;
 
-formDOM("#playWindow", "enter the name of your character", false);
+formDOM("#playWindow", "enter the name of your character", false, "start");
 
 const beginningLoop = (gameLvl, player) => {
-	let baddies = gameLvl.instantiateBad(level + 2);
+	let baddies = gameLvl.instantiateBad(level + 1);
 	gameLoop(baddies, player);
 	askDOM(
 		"#main",
@@ -106,6 +124,7 @@ const beginningLoop = (gameLvl, player) => {
 };
 
 const start = (name) => {
+	level = 1;
 	const gameLvl = new Factory(level);
 	const player = gameLvl.instantiatePlayer(name, 20);
 	const totalItems = new Item_Factory(level);
@@ -115,17 +134,17 @@ const start = (name) => {
 };
 
 const levelUp = (player) => {
-	let ans;
 	level++;
 	player.level = level;
-	const totalItems = new Item_Factory(level);
 	setTimeout(() => {
 		updateDOM(
 			"#playWindow",
 			`${player.name} has leveled up! They are now level ${player.level}!`
 		);
 	}, 2000);
-	if (level % 2 === 0) {
+	if (level === 5) {
+		endLoop(player, true);
+	} else if (level % 2 === 0) {
 		setTimeout(() => {
 			formDOM(
 				"#playWindow",
@@ -136,13 +155,15 @@ const levelUp = (player) => {
 			);
 		}, 2000);
 	} else {
-		formDOM(
-			"#playWindow",
-			`You can choose to upgrade your base health, or your base attack! Type 'attack' or 'health'`,
-			true,
-			"main",
-			player
-		);
+		setTimeout(() => {
+			formDOM(
+				"#playWindow",
+				`You can choose to upgrade your base health, or your base attack! Type 'attack' or 'health'`,
+				true,
+				"main",
+				player
+			);
+		}, 2000);
 	}
 };
 
@@ -189,4 +210,39 @@ const giveItem = (player, answer, type) => {
 	}, 2000);
 	const gameLvl = new Factory(level);
 	beginningLoop(gameLvl, player);
+};
+
+const endLoop = (player, winBool) => {
+	if (!winBool) {
+		setTimeout(() => {
+			formDOM(
+				"#playWindow",
+				`Game Over!
+            ${player.name} has died, with ${player.health} points left from that last attack! They were level ${player.level} and have ${player.exp} points of expereience! Do you want to play again? Type yes or no!`,
+				false,
+				"gameOver"
+			);
+		}, 2000);
+	} else if (winBool) {
+		setTimeout(() => {
+			formDOM(
+				"#playWindow",
+				`Game Over!
+            ${player.name} has won the game! They are level ${player.level} and have ${player.exp} points of expereience! Do you want to play again? Type yes or no!`,
+				false,
+				"gameOver"
+			);
+		});
+	}
+};
+
+const playAgain = (answer) => {
+	if (answer.trim().toLowerCase === "yes") {
+		location.reload();
+	} else if (answer.trim().toLowerCase === "no") {
+		updateDOM(
+			"#playWindow",
+			`You don't wanna play again? Okay! Reload if you want to try again some time!`
+		);
+	}
 };
