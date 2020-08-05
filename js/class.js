@@ -57,6 +57,10 @@ class Objects {
 			"#playWindow",
 			`${this.name} healed themselves for  ${healthItem.damage}. Their health is now ${this.health}. Their health potion now has ${healthItem.durability} uses left before it runs out!`
 		);
+		if (healthItem.durability <= 0) {
+			console.log(healthItem);
+			removeItem(healthItem, this);
+		}
 	}
 	aquireItem(item) {
 		item.owner = this.name;
@@ -76,7 +80,7 @@ class Factory {
 	instantiateBad(num) {
 		let badWeapons = new Item_Factory();
 
-		for (let i = 0; i < this.level * num; i++) {
+		for (let i = 0; i < this.level + num; i++) {
 			badWeapons.createRustySword();
 			const generatedObj = new Objects(
 				"baddie",
@@ -141,7 +145,7 @@ class Item_Factory {
 		return sword;
 	}
 	createHealthPot() {
-		const healthPot = new Item("health potion", 3, "healing", 3, 1, "Heals!");
+		const healthPot = new Item("health potion", 6, "healing", 3, 1, "Heals!");
 		this.modifiers.push(healthPot);
 		return healthPot;
 	}

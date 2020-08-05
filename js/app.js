@@ -28,12 +28,13 @@ const itemDOM = ($element, popUp) => {
 	$no.text("no");
 	$modal.append($yes);
 	$modal.append($no);
-	$yes.on("click", (event) => {
+	$yes.on("click", () => {
 		$modal.remove();
 		randomItemFind();
 	});
 	$no.on("click", () => {
 		$modal.remove();
+		startLoop();
 	});
 };
 
@@ -77,15 +78,24 @@ const formDOM = (element, question, bool, type, object) => {
 	$form.append($label);
 	$form.append($input);
 	$form.append($submit);
-	if (bool) {
+	if (bool && type) {
 		$("form").on("submit", (event) => {
 			event.preventDefault();
 			let answer = $("#infoRequired").val();
 			console.log(answer);
-			giveItem(object, answer, type);
+			setTimeout(() => {
+				giveItem(object, answer, type);
+			}, 2000);
 			$(event.currentTarget).remove();
 		});
-	} else {
+	} else if (!bool && type === "gameOver") {
+		event.preventDefault();
+		let answer = $("#infoRequired").val();
+		setTimeout(() => {
+			playAgain(answer);
+		}, 2000);
+		$(event.currentTarget).remove();
+	} else if (!bool && type === "start") {
 		$("form").on("submit", (event) => {
 			event.preventDefault();
 			let name = $("#infoRequired").val();
@@ -95,7 +105,7 @@ const formDOM = (element, question, bool, type, object) => {
 	}
 };
 
-const addInventory = (player, item) => {
+const addInventory = (item) => {
 	const $show = $("<div>");
 	$show.addClass("inventory-container");
 	const $modal = $("<div>");
@@ -135,18 +145,18 @@ const addInventory = (player, item) => {
 const loadInventory = (player, thing) => {
 	if (!thing) {
 		player.inventory.forEach((item) => {
-			addInventory(player, item);
+			addInventory(item);
 		});
 	} else if (thing) {
-		addInventory(player, thing);
+		addInventory(thing);
 	}
 };
 
 const clearInventory = (player) => {
-	player.inventory.forEach((item) => {
-		$("#Inventory").empty();
-		console.log(item);
-	});
+	$("#Inventory").empty();
+	// player.inventory.forEach((item) => {
+	// 	console.log(item);
+	// });
 	loadInventory(player);
 };
 
