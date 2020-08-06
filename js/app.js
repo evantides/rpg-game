@@ -12,9 +12,6 @@ const updateDOM = ($element, popUp) => {
 			let $thisThing = $(event.currentTarget);
 			$thisThing.remove();
 		});
-		setTimeout(() => {
-			$modal.remove();
-		}, 4000);
 	} else {
 		return $modal;
 	}
@@ -164,5 +161,3 @@ const clearInventory = (player) => {
 	// });
 	loadInventory(player);
 };
-
-$(() => {});

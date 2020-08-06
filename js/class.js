@@ -101,7 +101,19 @@ class Factory {
 		const you = new Objects("player", name, 1, health, 0.6);
 		return you;
 	}
-	instantiateBoss(health) {}
+	instantiateBoss(health) {
+		let bossWeapon = new Item_Factory();
+		const generatedBoss = new Objects(
+			"baddie",
+			`Boss`,
+			this.level,
+			health,
+			0.6
+		);
+		bossWeapon.createSword();
+		generatedBoss.inventory.push();
+		return generatedBoss;
+	}
 }
 
 class Item {
