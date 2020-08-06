@@ -14,10 +14,15 @@ const updateDOM = ($element, popUp) => {
 		});
 		setTimeout(() => {
 			$modal.remove();
-		}, 2000);
+		}, 4000);
 	} else {
 		return $modal;
 	}
+};
+
+const updateInformation = (element, popUp) => {
+	const $text = $(element);
+	$text.text(popUp);
 };
 
 const itemDOM = ($element, popUp) => {
@@ -85,7 +90,7 @@ const formDOM = (element, question, bool, type, object) => {
 			console.log(answer);
 			setTimeout(() => {
 				giveItem(object, answer, type);
-			}, 2000);
+			}, 4000);
 			$(event.currentTarget).remove();
 		});
 	} else if (!bool && type === "gameOver") {

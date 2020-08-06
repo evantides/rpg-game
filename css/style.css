@@ -82,3 +82,16 @@ form {
 .showIt {
 	display: flex;
 }
+
+#information {
+	display: flex;
+	margin-top: -10px;
+	justify-content: center;
+}
+
+#information > h2 {
+	padding: 20px;
+}
+#information > p {
+	padding: 20px;
+}

@@ -11,13 +11,14 @@ class Objects {
 		this.baseAttack = 2;
 	}
 	attack(target, choose) {
-		const test = Math.floor(Math.random() * (0 - 10)) / 10;
+		const test = Math.floor(Math.random() * 10) / 10;
+		console.log(test);
 		if (
 			this.inventory.length === 0 ||
 			(this.inventory.length > 0 &&
 				!this.inventory.find((element) => element.type === "sword"))
 		) {
-			if (this.accuracy >= test) {
+			if (test <= this.accuracy) {
 				target.health -= this.baseAttack;
 				updateDOM(
 					"#playWindow",
@@ -53,6 +54,7 @@ class Objects {
 	heal(healthItem) {
 		healthItem.durability--;
 		this.health += healthItem.damage;
+		updateInformation("#health", this.health);
 		updateDOM(
 			"#playWindow",
 			`${this.name} healed themselves for  ${healthItem.damage}. Their health is now ${this.health}. Their health potion now has ${healthItem.durability} uses left before it runs out!`
