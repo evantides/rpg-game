@@ -1,12 +1,33 @@
+let timeout = 4000;
 const removeItem = (choose, object) => {
 	console.log(choose, "THIS IS WHAT YOU'RE GOING TO DELETE");
 	object.inventory.splice(object.inventory.indexOf(choose), 1);
 	console.log(object.inventory, "THIS IS WHAT IS GOING TO BE RENDERED");
 	setTimeout(() => {
 		updateDOM("#playWindow", `${object.name}'s ${choose.name} broke!!`);
-	}, 2000);
+	}, timeout);
 	if (object.type === "player") {
 		clearInventory(object); //deletes images
+	}
+};
+
+const endLoop = (player, winBool) => {
+	if (!winBool) {
+		formDOM(
+			"#playWindow",
+			`Game Over!
+            ${player.name} has died, with ${player.health} points left from that last attack! They were level ${player.level} and have ${player.exp} points of expereience! Do you want to play again? Type yes or no!`,
+			false,
+			"gameOver"
+		);
+	} else if (winBool) {
+		formDOM(
+			"#playWindow",
+			`Game Over!
+            ${player.name} has won the game! They are level ${player.level} and have ${player.exp} points of expereience! Do you want to play again? Type yes or no!`,
+			false,
+			"gameOver"
+		);
 	}
 };
 
@@ -21,11 +42,12 @@ const gameLoop = (baddies, player) => {
 					"#playWindow",
 					`${player.name} defeated all enemies in this wave and have ${player.exp} points of experience!`
 				);
-			}, 2000);
+			}, timeout);
 			levelUp(player);
 		}
 	};
 	attackLoop = (skipTurn) => {
+		updateInformation("#health", player.health);
 		if (!skipTurn) {
 			player.attack(
 				baddies[0],
@@ -38,39 +60,40 @@ const gameLoop = (baddies, player) => {
 					updateDOM("#playWindow", `${baddies[0].name} has died!`);
 				}, 2000);
 				player.exp += 100;
-				setTimeout(() => {
-					updateDOM(
-						"#playWindow",
-						`${player.name} now has ${player.exp} points of experience!`
-					);
-				}, 4000);
+				updateInformation("#experience", player.exp);
 				if (Math.floor(Math.random() * (10 - 5) + 5) > 7) {
 					setTimeout(() => {
 						itemDOM(
 							"#main",
 							`${baddies[0].name} had an item on him! Would you like to see what it is?`
 						);
-					}, 4500);
+					}, timeout);
 				} else {
-					setTimeout(startLoop, 6000);
+					setTimeout(startLoop, timeout + 2000);
 				}
 				setTimeout(() => {
 					baddies.shift();
-				}, 4500);
+				}, timeout);
 			} else {
-				setTimeout(() => {
-					baddies[0].attack(player, baddies[0].inventory[0]);
-				}, 2000);
-				setTimeout(
-					() => askDOM("#main", `${baddies[0].name} is still alive! Now what?`),
-					3000
-				);
+				baddies[0].attack(player, baddies[0].inventory[0]);
+				updateInformation("#health", player.health);
+				if (player.health <= 0) {
+					console.log("I should be dead");
+					endLoop(player);
+				} else {
+					setTimeout(
+						() =>
+							askDOM("#main", `${baddies[0].name} is still alive! Now what?`),
+						2000
+					);
+				}
 			}
 		} else {
 			baddies[0].attack(player, baddies[0].inventory[0]);
+			updateInformation("#health", player.health);
 			if (player.health <= 0) {
-				endLoop();
 				console.log("I should be dead");
+				endLoop(player);
 			} else {
 				setTimeout(
 					() => askDOM("#main", `${baddies[0].name} is still alive! Now what?`),
@@ -115,7 +138,7 @@ let level;
 formDOM("#playWindow", "enter the name of your character", false, "start");
 
 const beginningLoop = (gameLvl, player) => {
-	let baddies = gameLvl.instantiateBad(level + 1);
+	let baddies = gameLvl.instantiateBad(2);
 	gameLoop(baddies, player);
 	askDOM(
 		"#main",
@@ -127,6 +150,8 @@ const start = (name) => {
 	level = 1;
 	const gameLvl = new Factory(level);
 	const player = gameLvl.instantiatePlayer(name, 20);
+	updateInformation("#health", player.health);
+	updateInformation("#experience", player.exp);
 	const totalItems = new Item_Factory(level);
 	player.inventory = [totalItems.createSword(), totalItems.createHealthPot()];
 	loadInventory(player);
@@ -163,13 +188,12 @@ const levelUp = (player) => {
 				"main",
 				player
 			);
-		}, 2000);
+		}, timeout);
 	}
 };
 
 const giveItem = (player, answer, type) => {
 	const newItems = new Item_Factory();
-	console.log(answer);
 	if (type === "weapon") {
 		switch (answer.trim().toLowerCase()) {
 			case "health potion":
@@ -201,39 +225,17 @@ const giveItem = (player, answer, type) => {
 		}
 	}
 	player.health = player.baseHealth;
+	updateInformation("#health", player.health);
+	updateInformation("#experience", player.exp);
 	setTimeout(() => {
 		updateDOM(
 			"#playWindow",
 			`Here are your current stats!
             ${player.name} has ${player.baseHealth}! They are level ${player.level} and have ${player.exp} points of expereience!`
 		);
-	}, 2000);
+	}, timeout);
 	const gameLvl = new Factory(level);
 	beginningLoop(gameLvl, player);
-};
-
-const endLoop = (player, winBool) => {
-	if (!winBool) {
-		setTimeout(() => {
-			formDOM(
-				"#playWindow",
-				`Game Over!
-            ${player.name} has died, with ${player.health} points left from that last attack! They were level ${player.level} and have ${player.exp} points of expereience! Do you want to play again? Type yes or no!`,
-				false,
-				"gameOver"
-			);
-		}, 2000);
-	} else if (winBool) {
-		setTimeout(() => {
-			formDOM(
-				"#playWindow",
-				`Game Over!
-            ${player.name} has won the game! They are level ${player.level} and have ${player.exp} points of expereience! Do you want to play again? Type yes or no!`,
-				false,
-				"gameOver"
-			);
-		});
-	}
 };
 
 const playAgain = (answer) => {
